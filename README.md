@@ -22,4 +22,4 @@ GitHub Pages serves the `main` branch root. Push to `main` and the site updates 
 
 ## Content rules
 - The current Accenture client is never named: "a global social media platform (name withheld under NDA)".
-- Contact is email, LinkedIn, and GitHub only; no phone number (including in the PDF).
+- Contact: phone, email, LinkedIn, and GitHub (site and PDF).
