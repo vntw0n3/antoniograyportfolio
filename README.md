@@ -18,7 +18,7 @@ python -m http.server 4327
 Then open http://localhost:4327.
 
 ## Deploy
-GitHub Pages serves the `main` branch root. Push to `main` and the site updates in about a minute.
+GitHub Pages serves the `main` branch root at https://vntw0n3.github.io/antoniograyportfolio/. Push to `main` and the site updates in about a minute.
 
 ## Content rules
 - The current Accenture client is never named: "a global social media platform (name withheld under NDA)".
