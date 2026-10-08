@@ -160,8 +160,46 @@
     <section class="section" id="projects" aria-labelledby="projects-title">
       <div class="container">
         <h2 class="section-title" id="projects-title"><span class="num" aria-hidden="true">03</span>Projects</h2>
-        <p class="section-intro">Tools I've built for working artists. For each one I wrote the product spec and broke it into tickets, then built it with Claude Code, reviewing and testing every change along the way.</p>
+        <p class="section-intro">Products I've built and shipped, including two community platforms with safety rules built in. For each one I wrote the product spec and broke it into tickets, then built it with Claude Code, reviewing and testing every change along the way.</p>
         <div class="projects">
+          <article class="project featured">
+            <div class="project-top">
+              <h3>Back in the Day</h3>
+              <p class="project-what">A nostalgia community for people who grew up 1990–2018: daily time capsules for every year, a story feed, live watch-party chat, a music archive and member profiles.</p>
+            </div>
+            <div class="project-body">
+              <h4>What I built</h4>
+              <p>Designed the community safety rules and enforced them in the database: rate-limited chat, banned-term screening, an auto-pause when three or more established members report an account within 7 days, and permissions members can't grant themselves. The rules are tested against a real Postgres engine. Sign-in works with passkeys, Google and Discord.</p>
+              <h4>Tools</h4>
+              <ul class="tags" aria-label="Tools">
+                <li>Next.js</li><li>TypeScript</li><li>Tailwind CSS</li><li>Supabase (Postgres, row-level security)</li><li>Vercel</li><li>Claude Code</li>
+              </ul>
+            </div>
+            <div class="project-links">
+              <a class="link-arrow" href="https://www.backinthedayhub.com" target="_blank" rel="noopener">Live site<span class="sr-only"> Back in the Day (opens in a new tab)</span></a>
+              <span class="private-note">Code available on request</span>
+            </div>
+          </article>
+
+          <article class="project featured">
+            <div class="project-top">
+              <h3>Guidance</h3>
+              <p class="project-what">A mentor-matching app for people born 1990–2005 that pairs members with mentors who have already done what they're working toward.</p>
+            </div>
+            <div class="project-body">
+              <h4>What I built</h4>
+              <p>Weighted match scoring across goals, experience, values, interests and life stage; connection requests and messaging; block and report tools; login and sign-up rate limiting (10 attempts per minute per IP); and email verification with single-use password reset links, ready to switch on.</p>
+              <h4>Tools</h4>
+              <ul class="tags" aria-label="Tools">
+                <li>Cloudflare Workers</li><li>Cloudflare D1 (SQL)</li><li>JavaScript</li><li>Claude Code</li>
+              </ul>
+            </div>
+            <div class="project-links">
+              <a class="link-arrow" href="https://guidance.antoniogray6.workers.dev" target="_blank" rel="noopener">Live app<span class="sr-only"> Guidance (opens in a new tab)</span></a>
+              <span class="private-note">Shows example members · Code available on request</span>
+            </div>
+          </article>
+
           <article class="project">
             <div class="project-top">
               <h3>Grayscale Studio</h3>

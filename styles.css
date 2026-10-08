@@ -344,8 +344,14 @@ svg { flex-shrink: 0; }
 .earlier span { color: var(--text); font-weight: 600; }
 
 /* ---------- Projects ---------- */
-.projects { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; }
-@media (max-width: 980px) { .projects { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.projects { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 20px; }
+.projects > .project { grid-column: span 2; }
+.projects > .project.featured { grid-column: span 3; }
+@media (max-width: 980px) {
+  .projects { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .projects > .project, .projects > .project.featured { grid-column: auto; }
+  .projects > .project:last-child { grid-column: 1 / -1; }
+}
 @media (max-width: 660px) { .projects { grid-template-columns: 1fr; } }
 
 .project {
