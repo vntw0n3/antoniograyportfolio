@@ -26,7 +26,9 @@
   onScroll();
   window.addEventListener("scroll", onScroll, { passive: true });
 
+  // Only in-page links (#about) map to sections; other pages link to index.html#about.
   const sections = links
+    .filter((a) => a.getAttribute("href").startsWith("#"))
     .map((a) => document.querySelector(a.getAttribute("href")))
     .filter(Boolean);
   const observer = new IntersectionObserver(

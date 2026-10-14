@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Safety by Design: Back in the Day | Antonio Gray Jr.</title>
+  <meta name="description" content="Case study: how Antonio Gray Jr. designed and tested the moderation and abuse controls for Back in the Day, a community platform, and carried the same thinking into Guidance.">
+  <meta name="theme-color" content="#0d0e10">
+  <meta name="color-scheme" content="dark">
+  <!-- Site is already dark; tells the Dark Reader extension not to re-theme it -->
+  <meta name="darkreader-lock">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="Safety by Design: Back in the Day">
+  <meta property="og:description" content="How I designed, built and tested the abuse controls for a community platform: report rules that resist brigading, filters tested for false positives, and enforcement that can be undone.">
+  <meta property="og:url" content="https://vntw0n3.github.io/antoniograyportfolio/case-study.html">
+  <meta property="og:image" content="https://vntw0n3.github.io/antoniograyportfolio/img/og-image.jpg">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <script src="script.js" defer></script>
+</head>
+<body class="case">
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <header class="site-header">
+    <nav class="nav container" aria-label="Primary">
+      <a class="brand" href="index.html" aria-label="Antonio Gray Jr., home">
+        <span class="brand-mark" aria-hidden="true">AG</span>
+        <span class="brand-name">Antonio Gray Jr.</span>
+      </a>
+      <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="nav-menu">
+        <span class="sr-only">Menu</span>
+        <span class="nav-toggle-bar" aria-hidden="true"></span>
+      </button>
+      <ul class="nav-menu" id="nav-menu">
+        <li><a href="index.html#about">About</a></li>
+        <li><a href="index.html#experience">Experience</a></li>
+        <li><a href="index.html#projects">Projects</a></li>
+        <li><a href="index.html#skills">Skills</a></li>
+        <li><a href="index.html#contact">Contact</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main id="main">
+    <article>
+      <header class="case-hero">
+        <div class="container narrow">
+          <a class="back-link" href="index.html#projects">← Back to projects</a>
+          <p class="eyebrow">Case study · Trust &amp; Safety</p>
+          <h1>Safety by design: building the abuse controls for a community platform</h1>
+          <p class="pitch">I review reports, appeals and enforcement escalations for a living. When I built my own community, Back in the Day, I designed its safety rules first and wrote them into the database, where nobody can click around them.</p>
+          <dl class="case-facts">
+            <div><dt>Product</dt><dd><a href="https://www.backinthedayhub.com" target="_blank" rel="noopener">backinthedayhub.com<span class="sr-only"> (opens in a new tab)</span></a></dd></div>
+            <div><dt>My role</dt><dd>Policy design, build and testing (solo)</dd></div>
+            <div><dt>Built with</dt><dd>Supabase (Postgres), Next.js, Claude Code</dd></div>
+            <div><dt>Rule tests</dt><dd>216 automated checks, all passing</dd></div>
+          </dl>
+        </div>
+      </header>
+
+      <div class="container narrow case-body">
+
+        <section aria-labelledby="problem">
+          <h2 id="problem">The problem</h2>
+          <p>Back in the Day is a nostalgia community for people who grew up between 1990 and 2018. Members post memories, chat live during watch parties, trade collectibles and build profiles. That's every surface where abuse shows up: posts, live chat, usernames, profiles and anything involving trades.</p>
+          <p>The constraint that shaped everything: <strong>there is no moderation team.</strong> I'm the only admin, and I'm not watching a queue around the clock. So the rules had to work on their own, resist being gamed, and leave room for a human to fix mistakes later.</p>
+        </section>
+
+        <section aria-labelledby="principles">
+          <h2 id="principles">How I approached it</h2>
+          <ol class="principles">
+            <li><strong>Enforce rules where they can't be skipped.</strong> Every rule lives in the database. Hiding a button stops honest users; a rule in the database stops everyone, including someone calling the API directly.</li>
+            <li><strong>Assume the report button will be used as a weapon.</strong> Mass-reporting is an abuse pattern too. Reports have to be hard to fake, hard to stack and hard to point at the wrong person.</li>
+            <li><strong>Act fast, but keep it reversible.</strong> Stop the harm quickly, and make it easy for a reviewer to undo a wrong call without it immediately happening again.</li>
+            <li><strong>Treat a false positive as a real failure.</strong> A filter that blocks innocent people pushes good members away. I tested for wrongful blocks as hard as for missed abuse.</li>
+          </ol>
+        </section>
+
+        <section aria-labelledby="decisions">
+          <h2 id="decisions">The rules, and why</h2>
+
+          <h3>Reports that can't be weaponized</h3>
+          <div class="decision">
+            <p class="rule">An account is paused automatically when <strong>3 or more different members</strong> report it within <strong>7 days</strong>. Only reporters whose accounts are over 24 hours old and in good standing count.</p>
+            <p><span class="label">Why:</span> one person with a grudge can't take someone down, and a batch of brand-new accounts made to pile on doesn't count. Three established members acting independently is a strong enough signal to act before I can look.</p>
+            <p><span class="label">Tradeoff:</span> three real members could still coordinate against someone. That's why the pause is reversible, and why reinstating an account also clears the reports that were still pending, so the same reports can't trip the pause again a second later.</p>
+          </div>
+          <div class="decision">
+            <p class="rule">The server decides who is being reported and saves a copy of the reported content (up to 500 characters). Each member can report a given item only once, and nobody can report themselves.</p>
+            <p><span class="label">Why:</span> a reporter can't attach a report to the wrong account, can't stack duplicate reports, and the evidence survives even if the author edits or deletes the post afterward. A reviewer always sees what was actually reported.</p>
+          </div>
+          <div class="decision">
+            <p class="rule">A paused account is signed out on every device, can't post, and its content disappears for everyone except the owner and admins.</p>
+            <p><span class="label">Why:</span> the harm stops immediately, but nothing is deleted. If the pause was wrong, restoring the account brings everything back.</p>
+          </div>
+
+          <h3>De-escalation built into the product</h3>
+          <div class="decision">
+            <p class="rule">Live chat allows 200 characters, one message every 3 seconds, and turns ALL-CAPS messages into normal sentence case. Chat only opens from 30 minutes before a showing until 30 minutes after.</p>
+            <p><span class="label">Why:</span> most chat problems are flooding and shouting. Slowing the pace and lowering the volume prevents a lot of them without punishing anyone, and a chat that isn't open can't be raided at 3 AM.</p>
+          </div>
+          <div class="decision">
+            <p class="rule">Friend requests are capped at 30 a day. Replies have a short cooldown.</p>
+            <p><span class="label">Why:</span> spam accounts work at volume. Normal members never hit these limits.</p>
+          </div>
+
+          <h3>Shrinking the scam surface</h3>
+          <div class="decision">
+            <p class="rule">The Trading Post is link-out only: <strong>no money moves through the site.</strong> Sale listings require a secure (https) link, and trades require contact details.</p>
+            <p><span class="label">Why:</span> this comes from my years on fraud and payment-dispute work. Most marketplace scams depend on the platform holding the money or on a buyer clicking an unsafe link. Taking payments off the platform removes the first, and requiring https links narrows the second.</p>
+          </div>
+
+          <h3>Permissions members can't give themselves</h3>
+          <div class="decision">
+            <p class="rule">Members can edit their own profile, but never the fields that control enforcement: suspended status, admin status, or their own counts. Only the server can pause an account.</p>
+            <p><span class="label">Why:</span> if a client can write a field, someone will eventually try. Those fields are locked at the database level, not just hidden in the app.</p>
+          </div>
+        </section>
+
+        <section aria-labelledby="testing">
+          <h2 id="testing">Testing for misses and for false alarms</h2>
+          <p>The content filter screens posts, chat, listings, usernames and profiles. It catches slurs and adult terms, including look-alike spellings with numbers and symbols swapped in, and numeric hate codes.</p>
+          <p>The harder problem is the opposite one. Plenty of ordinary words contain blocked words inside them, and a filter that just searches for letters blocks innocent names. So the tests include a list of legitimate usernames that <em>must</em> get through, such as <code>scunthorpe</code>, <code>essex_girl</code>, <code>dickens_fan</code>, <code>assassin_creed</code> and <code>uranus_rocks</code>. Then the tests run <strong>all of the site's own capsule text</strong> through the filter and fail if any of it is blocked.</p>
+          <p>Every rule on this page has automated tests behind it: reports, the auto-pause, chat limits, permissions and the filter in both directions. <strong>216 checks pass</strong> against a real Postgres engine.</p>
+        </section>
+
+        <section aria-labelledby="guidance">
+          <h2 id="guidance">The same thinking in a second product</h2>
+          <p><a href="https://guidance.antoniogray6.workers.dev" target="_blank" rel="noopener">Guidance<span class="sr-only"> (opens in a new tab)</span></a> is a mentor-matching app, which means strangers messaging each other one on one. That's a higher-risk setting, so the controls are built around giving each person a way out:</p>
+          <ul class="case-list">
+            <li><strong>Blocking works both ways.</strong> Once either person blocks the other, neither appears in the other's matches, new contact is refused, and any open connection between them ends.</li>
+            <li><strong>Report and block in one step,</strong> so a member who feels unsafe doesn't have to choose between them.</li>
+            <li><strong>Sign-in is rate-limited</strong> to 10 attempts per minute per IP to slow password guessing, and passwords are stored only as salted hashes.</li>
+            <li><strong>Email verification before contact:</strong> once email sending is switched on, members must confirm their address before they can send or accept a mentorship request. Reset links work once and expire within an hour.</li>
+          </ul>
+        </section>
+
+        <section aria-labelledby="next">
+          <h2 id="next">What's not built yet</h2>
+          <p>I'd rather say this plainly than have someone find it:</p>
+          <ul class="case-list">
+            <li><strong>Guidance has no admin review screen yet.</strong> Reports are saved, but I read them directly from the database.</li>
+            <li><strong>Back in the Day has no appeal form.</strong> A paused member can't ask for a review from inside the site yet. That's the next thing I'd add: a short appeal with the reported content shown alongside it.</li>
+            <li><strong>No moderation metrics yet.</strong> I'd want to track how often reports lead to action and how often a pause gets reversed. A rising reversal rate would tell me the pause threshold is too low.</li>
+          </ul>
+        </section>
+
+        <section class="case-close" aria-labelledby="close">
+          <h2 id="close">Why this matters for the job</h2>
+          <p>At work I sit on the reviewer side: reading reports, judging appeals, and documenting decisions so the next person can act on them. Building these systems myself showed me the other side: how a threshold gets chosen, how a rule gets gamed, and why a reviewer needs to see the evidence exactly as it was reported. I bring both sides to the work.</p>
+          <div class="hero-actions">
+            <a class="btn btn-primary" href="index.html#contact">Get in touch</a>
+            <a class="btn btn-ghost" href="index.html#projects">See all projects</a>
+          </div>
+        </section>
+      </div>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <p>© <span data-year>2026</span> Antonio Gray Jr. · San Antonio, TX · Open to remote</p>
+      <a href="index.html">Back to home</a>
+    </div>
+  </footer>
+</body>
+</html>
