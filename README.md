@@ -18,7 +18,12 @@ python -m http.server 4327
 Then open http://localhost:4327.
 
 ## Deploy
-GitHub Pages serves the `main` branch root at https://vntw0n3.github.io/antoniograyportfolio/. Push to `main` and the site updates in about a minute.
+Live at https://antoniograyjr.com/, served by the Cloudflare Pages project `antoniograyjr-com` (direct upload, no build). Stage only the public files, then deploy:
+
+```bash
+rm -rf .deploy && mkdir .deploy && cp -r index.html case-study.html styles.css script.js favicon.svg img resume .deploy/
+CLOUDFLARE_API_TOKEN=... CLOUDFLARE_ACCOUNT_ID=... npx wrangler pages deploy .deploy --project-name antoniograyjr-com --branch main
+```
 
 ## Content rules
 - The current Accenture client is never named: "a global social media platform (name withheld under NDA)".
